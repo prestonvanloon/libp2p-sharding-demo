@@ -1,0 +1,14 @@
+syntax = "proto3";
+package bootnode;
+
+message RegisterPeerRequest {
+  Peer peer = 1;
+}
+
+message GetPeersResponse {
+  repeated Peer peers = 1;
+}
+
+message Peer {
+  string address = 1;
+}
