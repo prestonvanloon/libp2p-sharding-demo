@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
 
 proto_library(
     name = "bootnode_proto",
-    srcs = ["bootnode.proto"],
+    srcs = ["messages.proto"],
     visibility = ["//visibility:public"],
 )
 
