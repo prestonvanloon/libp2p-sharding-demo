@@ -4,6 +4,7 @@ This is a work in progress exploration of libp2p in a sharded system.
 
 Requirements: [bazel](bazel.io)
 
+**WORK IN PROGRESS**
 
 ## Bootnode
 
