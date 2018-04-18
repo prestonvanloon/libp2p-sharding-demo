@@ -26,6 +26,7 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Printf("I am %s\n", host.FullAddr(n))
+	peers = append(peers, &protos.Peer{Address: host.FullAddr(n)})
 
 	n.SetStreamHandler("/p2p/1.0.0", handleStream)
 	select {} // hang forever
