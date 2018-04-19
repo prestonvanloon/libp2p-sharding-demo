@@ -15,6 +15,7 @@ message Peer {
 
 // Shard protocol messages
 // Referenced from https://gist.github.com/hwwhww/b5e8682d6c5e7f6483b71d3de89456ed
+// and https://hackmd.io/s2Pirp8qQ3q35gSl7EDSNQ?view
 
 // Inform a peer of its current ethereum shard state. This message should be 
 // sent after the initial handshake and prior to any ethereum shard related

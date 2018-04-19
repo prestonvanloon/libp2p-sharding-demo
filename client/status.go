@@ -9,13 +9,17 @@ import (
 	protos "github.com/prestonvanloon/libp2p-sharding-demo/proto"
 )
 
+var (
+	PROTOCOL_VERSION = 1
+)
+
 func handleStatusStream(s net.Stream) {
 	rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
 
 	// Send client status
 	status := &protos.Status{
 		// TODO: Populate with real data
-		ProtocolVersion: 1,
+		ProtocolVersion: PROTOCOL_VERSION,
 		ShardId:         1,
 		HeadHeight:      1,
 		HeadHash:        1,
