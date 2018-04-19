@@ -12,3 +12,82 @@ message GetPeersResponse {
 message Peer {
   string address = 1;
 }
+
+// Shard protocol messages
+// Referenced from https://gist.github.com/hwwhww/b5e8682d6c5e7f6483b71d3de89456ed
+
+// Inform a peer of its current ethereum shard state. This message should be 
+// sent after the initial handshake and prior to any ethereum shard related
+// messages.
+message Status {
+  uint64 protocol_version = 1;
+  uint64 shard_id = 2;
+  uint64 head_height = 3;
+  uint64 head_hash = 4;
+}
+
+// Specify one or more new collations which have appeared on the network. To be
+// maximally helpful, nodes should inform peers of all collations that they may
+// not be aware of. Including hashes that the sending peer could reasonably be
+// considered to know (due to the fact they were previously informed of because
+// that node has itself advertised knowledge of the hashes through 
+// NewCollationHashes) is considered Bad Form, and may reduce the reputation of
+// the sending node. Including hashes that the sending node later refuses to 
+// honour with a proceeding GetCollationHeaders message is considered Bad Form,
+// and may reduce the reputation of the sending node.
+message NewCollationHashes {
+  repeated CollationHash hashes = 1;
+
+  message CollationHash {
+    bytes hash = 1;
+    uint64 number = 2;
+  }
+}
+
+// Require peer to return a CollationHeaders message. Reply must contain a
+// number of collation headers, of rising number when reverse is 0, falling
+// when 1, skip collation apart, beginning at collation collation (denoted by
+// hash) in the canonical chain, and with at most maxHeaders items.
+message GetCollationHeaders {
+  bytes starting_collation_hash = 1;
+  uint64 max_headers = 2;
+  bool skip = 3;
+  bool reverse = 4;
+}
+
+// Reply to GetCollationHeaders. The items in the list (following the message
+// ID) are collation headers in the format described in the Sharding
+// specification, previously asked for in a GetCollationHeaders message. This
+// may validly contain no collation headers if no collation headers were able
+// to be returned for the GetCollationHeaders query.
+message CollationHeaders {
+  repeated CollationHeader headers = 1; 
+}
+
+ message CollationHeader {
+  // TODO
+}
+
+// Require peer to return a CollationBodies message. Specify the set of
+// collations that we're interested in with the hashes.
+message GetCollationBodies {
+  repeated bytes hashes = 1;
+}
+
+// Reply to GetCollationBodies. The items in the list (following the message
+// ID) are some of the collations, minus the header, in the format described
+// in the Sharding specification, previously asked for in a GetCollationBodies
+// message. This may validly contain no items if no collation is able to be
+// returned for the GetCollationBodies query.
+message CollationBodies {
+  repeated bytes bodies = 1;
+}
+
+// Specify a single collation that the peer should know about. The composite
+// item in the list (following the message ID) is a collation in the format
+// described in the main Sharding specification.
+message NewCollation {
+  CollationHeader header = 1;
+  bytes body = 2;
+  uint64 height = 3;
+}
