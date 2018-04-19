@@ -15,12 +15,15 @@ import (
 	net "github.com/libp2p/go-libp2p-net"
 	peer "github.com/libp2p/go-libp2p-peer"
 	pstore "github.com/libp2p/go-libp2p-peerstore"
+	protocol "github.com/libp2p/go-libp2p-protocol"
 	ma "github.com/multiformats/go-multiaddr"
 )
 
 var (
 	bootnodeAddr = flag.String("b", "", "Bootnode address")
 	port         = flag.Int("p", 10100, "Port to listen on")
+
+	ETH_STATUS protocol.ID = "/eth/status"
 )
 
 func main() {
@@ -50,6 +53,7 @@ func main() {
 	}
 
 	h.SetStreamHandler("/p2p/1.0.0", handleStream)
+	h.SetStreamHandler(ETH_STATUS, handleStatusStream)
 	select {} // hang forever
 }
 
@@ -133,18 +137,23 @@ func connectTo(peer *protos.Peer, h libp2pHost.Host) error {
 	h.Peerstore().AddAddr(*peerid, targetAddr, pstore.PermanentAddrTTL)
 
 	log.Println("opening stream")
-	// make a new stream from host B to host A
-	// it should be handled on host A by the handler we set above because
-	// we use the same /p2p/1.0.0 protocol
-	s, err := h.NewStream(context.Background(), *peerid, "/p2p/1.0.0")
+	s, err := h.NewStream(context.Background(), *peerid, ETH_STATUS)
 	if err != nil {
 		return err
 	}
 	// Create a buffered stream so that read and writes are non blocking.
 	rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
 
-	// TODO
-	_ = rw
+	data := make([]byte, 4096)
+	n, err := rw.Read(data)
+	if err != nil {
+		log.Printf("failed to read %v", err)
+	}
+
+	status := &protos.Status{}
+	err = proto.Unmarshal(data[:n], status)
+
+	log.Printf("Got a status from peer: %v", status)
 
 	return nil
 }
