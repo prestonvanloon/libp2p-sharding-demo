@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	PROTOCOL_VERSION = 1
+	PROTOCOL_VERSION uint64 = 1
 )
 
 func handleStatusStream(s net.Stream) {
